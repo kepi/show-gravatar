@@ -13,11 +13,11 @@ Go to your RoundCube plugins directory and type
 
 - Test gravatar display in more browsers (help welcomed)
 - Add setting page
-  - enable/disable per user basis
+  - <del>enable/disable per user basis</del>
   - different gravatar sizes
   - support for gravatar ratings
-  - enable/disable on preview pane
-  - enable/disable on show message
+  - <del>enable/disable on preview pane</del>
+  - <del>enable/disable on show message</del>
 - Show gravatar in address book
 - Caching maybe
 
