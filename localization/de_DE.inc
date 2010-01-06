@@ -3,7 +3,6 @@
 /*
 
 +-----------------------------------------------------------------------+
-| Language/de_DE/labels.inc                                             |
 |                                                                       |
 | Language file of the RoundCube show gravatar plugin                   |
 | Copyright (C) 2005-2009, RoundCube Dev. - Switzerland                 |
@@ -17,7 +16,7 @@
 
 $labels = array();
 $labels['gravatars'] = 'Gravatars'; 
-$labels['gravatar_enable'] = 'In der Nachricht anzeigen'; 
-$labels['gravatar_enable'] = 'In der Vorschau anzeigen';
+$labels['gravatar_enable_message'] = 'In der Nachricht anzeigen'; 
+$labels['gravatar_enable_preview'] = 'In der Vorschau anzeigen';
 
 ?>

@@ -3,7 +3,6 @@
 /*
 
 +-----------------------------------------------------------------------+
-| Language/en_US/labels.inc                                             |
 |                                                                       |
 | Language file of the RoundCube show gravatar plugin                   |
 | Copyright (C) 2005-2009, RoundCube Dev. - Switzerland                 |
