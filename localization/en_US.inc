@@ -17,7 +17,7 @@
 
 $labels = array();
 $labels['gravatars']  = 'Gravatars';
-$labels['gravatar_enable']  = 'Show on message detail';
-$labels['gravatar_enable']  = 'Show on message preview';
+$labels['gravatar_enable_message']  = 'Show on message detail';
+$labels['gravatar_enable_preview']  = 'Show on message preview';
 
 ?>
