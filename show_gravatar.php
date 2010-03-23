@@ -19,6 +19,9 @@ class show_gravatar extends rcube_plugin
   private $gravatar_id;
   private $sender;
   private $rcmail;
+  private $size;
+  private $rating;
+  private $default;
 
   function init()
   {
@@ -33,6 +36,11 @@ class show_gravatar extends rcube_plugin
 
       $this->add_hook('message_load', array($this, 'message_load'));
       $this->add_hook('template_object_messageheaders', array($this, 'html_output'));
+
+      $this->size = $this->rcmail->config->get('gravatar_size', 48);
+      $this->rating = $this->rcmail->config->get('gravatar_rating', 'g');
+      $this->default =
+        $this->rcmail->config->get('gravatar_default', 'identicon');
 
       $skin = $this->rcmail->config->get('skin');
       if (!file_exists($this->home."/skins/$skin/help.css"))
@@ -102,10 +110,12 @@ class show_gravatar extends rcube_plugin
 
   function gravatar()
   {
-    $size = 64;
-
-    $url = "http://www.gravatar.com/avatar.php?gravatar_id=" . $this->gravatar_id . "&size=" . $size;
-    return html::div(array('class' => 'gravatar'), html::img(array('src' => $url, 'alt' => 'Gravatar')));
+    $url = "http://www.gravatar.com/avatar/" . $this->gravatar_id
+      . "?s=" . $this->size
+      . "&r=" . $this->rating
+      . "&d=" . $this->default;
+    return html::div(array('class' => 'gravatar'),
+      html::img(array('src' => $url, 'title' => 'Gravatar')));
   }
 
   function html_output($p)
