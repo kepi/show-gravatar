@@ -22,6 +22,7 @@ class show_gravatar extends rcube_plugin
   private $size;
   private $rating;
   private $default;
+  private $border;
   private $default_size = 48;
   private $default_rating = 'g';
   private $default_default = 'identicon';
@@ -45,6 +46,8 @@ class show_gravatar extends rcube_plugin
       $this->rating = $this->rcmail->config->get('gravatar_rating', $this->default_rating);
       $this->default =
         $this->rcmail->config->get('gravatar_default', $this->default_identicon);
+
+      $this->border = $this->enabled('gravatar_border');
 
       $skin = $this->rcmail->config->get('skin');
       if (!file_exists($this->home."/skins/$skin/help.css"))
@@ -138,6 +141,8 @@ class show_gravatar extends rcube_plugin
                           'wavatar' => 'Wavatar'
                       ), $this->default_default, $options);
 
+    $this->checkbox('gravatar_border', $options);
+
     if ($args['section'] == 'mailview') {
 
       $args['blocks']['gravatar'] = array(
@@ -157,6 +162,7 @@ class show_gravatar extends rcube_plugin
       $args['prefs']['gravatar_size'] = get_input_value('_gravatar_size', RCUBE_INPUT_POST);
       $args['prefs']['gravatar_rating'] = get_input_value('_gravatar_rating', RCUBE_INPUT_POST);
       $args['prefs']['gravatar_default'] = get_input_value('_gravatar_default', RCUBE_INPUT_POST);
+      $args['prefs']['gravatar_border'] = get_input_value('_gravatar_border', RCUBE_INPUT_POST);
       return $args;
     }
   }
@@ -173,7 +179,7 @@ class show_gravatar extends rcube_plugin
       . "?s=" . $this->size
       . "&r=" . $this->rating
       . "&d=" . $this->default;
-    return html::div(array('class' => 'gravatar'),
+    return html::div(array('class' => 'gravatar'.($this->border?' gravatarBorder':'') ),
       html::img(array('src' => $url, 'title' => 'Gravatar')));
   }
 

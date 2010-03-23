@@ -21,5 +21,6 @@ $labels['gravatar_enable_preview']  = 'Show on message preview';
 $labels['gravatar_size'] = 'Avatar size';
 $labels['gravatar_rating'] = 'Avatar rating';
 $labels['gravatar_default'] = 'Default avatar if gravatar missing';
+$labels['gravatar_border'] = 'Border around avatar';
 
 ?>

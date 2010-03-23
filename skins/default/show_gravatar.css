@@ -3,3 +3,9 @@
 	right: 30px;
 	top: 10px;
 }
+
+.gravatarBorder {
+  border: 1px solid #DDD;
+  padding: 2px;
+  background: white;
+}

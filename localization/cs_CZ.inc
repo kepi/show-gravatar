@@ -21,5 +21,6 @@ $labels['gravatar_enable_preview']  = 'Povolit v náhledu zprávy';
 $labels['gravatar_size'] = 'Velikost avataru';
 $labels['gravatar_rating'] = 'Hodnocení avataru';
 $labels['gravatar_default'] = 'Výchozí avatar, pokud uživatel nemá';
+$labels['gravatar_border'] = 'Rámeček kolem avataru';
 
 ?>
