@@ -34,6 +34,7 @@ class show_gravatar extends rcube_plugin
           && ( ($this->enabled('gravatar_enable_message') && $this->rcmail->action == 'show')
             || ($this->enabled('gravatar_enable_preview') && $this->rcmail->action == 'preview'))) {
 
+      $this->add_hook('render_page', array($this, 'render_page'));
       $this->add_hook('message_load', array($this, 'message_load'));
       $this->add_hook('template_object_messageheaders', array($this, 'html_output'));
 
@@ -124,4 +125,11 @@ class show_gravatar extends rcube_plugin
 
     return $p;
   } 
+
+  function render_page($p)
+  {
+    $this->rcmail->output->add_header(
+      html::tag('link', array('rel' => 'dns-prefetch',
+                'href' => 'http://www.gravatar.com/')));
+  }
 }
