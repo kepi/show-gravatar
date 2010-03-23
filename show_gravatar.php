@@ -22,6 +22,9 @@ class show_gravatar extends rcube_plugin
   private $size;
   private $rating;
   private $default;
+  private $default_size = 48;
+  private $default_rating = 'g';
+  private $default_default = 'identicon';
 
   function init()
   {
@@ -38,10 +41,10 @@ class show_gravatar extends rcube_plugin
       $this->add_hook('message_load', array($this, 'message_load'));
       $this->add_hook('template_object_messageheaders', array($this, 'html_output'));
 
-      $this->size = $this->rcmail->config->get('gravatar_size', 48);
-      $this->rating = $this->rcmail->config->get('gravatar_rating', 'g');
+      $this->size = $this->rcmail->config->get('gravatar_size', $this->default_size);
+      $this->rating = $this->rcmail->config->get('gravatar_rating', $this->default_rating);
       $this->default =
-        $this->rcmail->config->get('gravatar_default', 'identicon');
+        $this->rcmail->config->get('gravatar_default', $this->default_identicon);
 
       $skin = $this->rcmail->config->get('skin');
       if (!file_exists($this->home."/skins/$skin/help.css"))
@@ -65,6 +68,7 @@ class show_gravatar extends rcube_plugin
     return $this->rcmail->config->get($option) ? true : false;
   }
 
+  // helper for checkbox
   function checkbox($option, &$options)
   {
       $value = $this->rcmail->config->get($option);
@@ -76,12 +80,63 @@ class show_gravatar extends rcube_plugin
       );
   }
 
+  // check if array is associative
+  function is_assoc($array) {
+        return (is_array($array) && (0 !== count(array_diff_key($array, array_keys(array_keys($array)))) || count($array)==0));
+  }
+  
+  // helper for select
+  function select($option, $possible_options, $default, &$options)
+  {
+      $value = $this->rcmail->config->get($option, $default);
+      $select = new html_select(array('name' => '_'.$option));
+
+      // if associative, build needed arrays
+      if ( $this->is_assoc($possible_options) ) {
+
+        $opt_labels = array();
+        $opt_attrs = array();
+
+        foreach($possible_options as $attr => $label) {
+          $opt_labels[] = $label;
+          $opt_attrs[] = $attr;
+        }
+
+        $select->add($opt_labels, $opt_attrs);
+
+      // else options and attrs are same
+      } else {
+        $select->add($possible_options, $possible_options);
+      }
+
+
+      $options[$option] = array(
+        'title' => html::label($option, Q($this->gettext($option))),
+        'content' => $select->show($value)
+      );
+  }
+
   function prefs_table($args)
   {
     $options = array();
 
     $this->checkbox('gravatar_enable_preview', $options);
     $this->checkbox('gravatar_enable_message', $options);
+
+    $this->select('gravatar_size', array('16','24','32','48','64','128'), "{$this->default_size}", $options);
+    $this->select('gravatar_rating', 
+                    array('g' => 'G rated',
+                          'pg' => 'PG rated',
+                          'r' => 'R rated',
+                          'x' => 'X rated'
+                      ), $this->default_rating, $options);
+
+    $this->select('gravatar_default', 
+                    array('' => 'Blue G',
+                          'identicon' => 'Identicon',
+                          'monsterid' => 'Monsterid',
+                          'wavatar' => 'Wavatar'
+                      ), $this->default_default, $options);
 
     if ($args['section'] == 'mailview') {
 
@@ -99,6 +154,9 @@ class show_gravatar extends rcube_plugin
     if ($args['section'] == 'mailview') {
       $args['prefs']['gravatar_enable_preview'] = get_input_value('_gravatar_enable_preview', RCUBE_INPUT_POST);
       $args['prefs']['gravatar_enable_message'] = get_input_value('_gravatar_enable_message', RCUBE_INPUT_POST);
+      $args['prefs']['gravatar_size'] = get_input_value('_gravatar_size', RCUBE_INPUT_POST);
+      $args['prefs']['gravatar_rating'] = get_input_value('_gravatar_rating', RCUBE_INPUT_POST);
+      $args['prefs']['gravatar_default'] = get_input_value('_gravatar_default', RCUBE_INPUT_POST);
       return $args;
     }
   }
