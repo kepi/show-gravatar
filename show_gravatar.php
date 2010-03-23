@@ -45,7 +45,7 @@ class show_gravatar extends rcube_plugin
       $this->size = $this->rcmail->config->get('gravatar_size', $this->default_size);
       $this->rating = $this->rcmail->config->get('gravatar_rating', $this->default_rating);
       $this->default =
-        $this->rcmail->config->get('gravatar_default', $this->default_identicon);
+        $this->rcmail->config->get('gravatar_default', $this->default_default);
 
       $this->border = $this->enabled('gravatar_border');
 
