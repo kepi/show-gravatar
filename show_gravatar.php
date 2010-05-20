@@ -26,12 +26,18 @@ class show_gravatar extends rcube_plugin
   private $default_size = 48;
   private $default_rating = 'g';
   private $default_default = 'identicon';
+  private $gravatar_url = 'http://www.gravatar.com/';
 
   function init()
   {
     $this->add_texts('localization/', false);
 
     $this->rcmail = rcmail::get_instance();
+
+    echo $_SERVER['SCRIPT_URI'];
+    if ( $this->is_https() ) {
+      $this->gravatar_url = 'https://secure.gravatar.com/';
+    }
     
     // preview
     if ($this->rcmail->task == 'mail'
@@ -64,6 +70,13 @@ class show_gravatar extends rcube_plugin
       }
     }
 
+  }
+
+  // returns true if rc is running on https protocol
+  function is_https()
+  {
+    return ( $_SERVER["HTTPS"] == 'on' || $_SERVER["HTTP_FRONT_END_HTTPS"] == 'on' 
+              || preg_match("/^https:/", $_SERVER['SCRIPT_URI']) ) ? true : false;
   }
 
   function enabled($option)
@@ -175,7 +188,7 @@ class show_gravatar extends rcube_plugin
 
   function gravatar()
   {
-    $url = "http://www.gravatar.com/avatar/" . $this->gravatar_id
+    $url = $this->gravatar_url . "avatar/" . $this->gravatar_id
       . "?s=" . $this->size
       . "&r=" . $this->rating
       . "&d=" . $this->default;
@@ -194,6 +207,6 @@ class show_gravatar extends rcube_plugin
   {
     $this->rcmail->output->add_header(
       html::tag('link', array('rel' => 'dns-prefetch',
-                'href' => 'http://www.gravatar.com/')));
+                'href' => $this->gravatar_url)));
   }
 }
