@@ -115,7 +115,7 @@ class show_gravatar extends rcube_plugin
 
         foreach($possible_options as $attr => $label) {
           $opt_labels[] = $label;
-          $opt_attrs[] = $attr;
+          $opt_attrs[] = (string)$attr;
         }
 
         $select->add($opt_labels, $opt_attrs);
@@ -141,17 +141,19 @@ class show_gravatar extends rcube_plugin
 
     $this->select('gravatar_size', array('16','24','32','48','64','128'), "{$this->default_size}", $options);
     $this->select('gravatar_rating', 
-                    array('g' => 'G rated',
-                          'pg' => 'PG rated',
-                          'r' => 'R rated',
-                          'x' => 'X rated'
+                    array('g' => Q($this->gettext('gravatar_G')),
+                          'pg' => Q($this->gettext('gravatar_PG')),
+                          'r' => Q($this->gettext('gravatar_R')),
+                          'x' => Q($this->gettext('gravatar_X'))
                       ), $this->default_rating, $options);
 
     $this->select('gravatar_default', 
                     array('' => 'Blue G',
                           'identicon' => 'Identicon',
                           'monsterid' => 'Monsterid',
-                          'wavatar' => 'Wavatar'
+                          'wavatar' => 'Wavatar',
+                          'mm' => 'Mistery-man',
+                          '404' => Q($this->gettext('gravatar_none'))
                       ), $this->default_default, $options);
 
     $this->checkbox('gravatar_border', $options);

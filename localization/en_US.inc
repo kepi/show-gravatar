@@ -22,5 +22,10 @@ $labels['gravatar_size'] = 'Avatar size';
 $labels['gravatar_rating'] = 'Avatar rating';
 $labels['gravatar_default'] = 'Default avatar if gravatar missing';
 $labels['gravatar_border'] = 'Border around avatar';
+$labels['gravatar_none'] = 'None';
+$labels['gravatar_G'] = 'G rated';
+$labels['gravatar_PG'] = 'PG rated';
+$labels['gravatar_R'] = 'R rated';
+$labels['gravatar_X'] = 'X rated';
 
 ?>
