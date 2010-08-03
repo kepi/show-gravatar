@@ -34,7 +34,6 @@ class show_gravatar extends rcube_plugin
 
     $this->rcmail = rcmail::get_instance();
 
-    echo $_SERVER['SCRIPT_URI'];
     if ( $this->is_https() ) {
       $this->gravatar_url = 'https://secure.gravatar.com/';
     }
