@@ -26,6 +26,8 @@ class show_gravatar extends rcube_plugin
   private $default_size = 48;
   private $default_rating = 'g';
   private $default_default = 'identicon';
+  private $gravatar_port = 80;
+  private $gravatar_hostname = 'www.gravatar.com';
   private $gravatar_url = 'http://www.gravatar.com/';
 
   function init()
@@ -35,6 +37,8 @@ class show_gravatar extends rcube_plugin
     $this->rcmail = rcmail::get_instance();
 
     if ( $this->is_https() ) {
+      $this->gravatar_port = 443;
+      $this->gravatar_hostname = 'secure.gravatar.com';
       $this->gravatar_url = 'https://secure.gravatar.com/';
     }
     
@@ -193,6 +197,16 @@ class show_gravatar extends rcube_plugin
       . "?s=" . $this->size
       . "&r=" . $this->rating
       . "&d=" . $this->default;
+
+    // check if remote image doesn't return 404 if we use
+    // 404 for default gravatar
+    if ( $this->default == '404' ) {
+       $headers = get_headers($url);
+
+       if ( !is_array($headers) || preg_match("/404 Not Found/", $headers[0]) ) 
+          return;
+    }
+
     return html::div(array('class' => 'gravatar'.($this->border?' gravatarBorder':'') ),
       html::img(array('src' => $url, 'title' => 'Gravatar')));
   }
