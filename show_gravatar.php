@@ -63,7 +63,7 @@ class show_gravatar extends rcube_plugin
         $skin = 'default';
   
       // add style for placing gravatar icon
-      $this->include_stylesheet("skins/$skin/show_gravatar.css");
+      $this->include_stylesheet("skins/$skin/show_gravatar_".$this->size.".css");
     }
     else if ($this->rcmail->task == 'settings') {
       $dont_override = $this->rcmail->config->get('dont_override', array());
