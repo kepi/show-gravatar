@@ -1,0 +1,12 @@
+.gravatar {
+	position: absolute;
+	right: 8px;
+	top: 6px;
+}
+
+.gravatar img {
+    box-shadow: 1px 1px silver;
+}
+div.pagenav {
+  padding-right: 63px;
+}
