@@ -59,7 +59,7 @@ class show_gravatar extends rcube_plugin
       $this->border = $this->enabled('gravatar_border');
 
       $skin = $this->rcmail->config->get('skin');
-      if (!file_exists($this->home."/skins/$skin/help.css"))
+      if (!file_exists($this->home."/skins/$skin/show_gravatar.css"))
         $skin = 'default';
   
       // add style for placing gravatar icon
