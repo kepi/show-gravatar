@@ -1,7 +1,7 @@
 #Show Gravatar
 
-This is plugin for RoundCube webmail client which
-display gravatar for sender in every message.
+This is plugin for Roundcube webmail client which
+displays gravatar for sender in every message.
 
 ##Instalation
 
@@ -18,6 +18,6 @@ Go to your RoundCube plugins directory and type
   - <del>support for gravatar ratings</del>
   - <del>enable/disable on preview pane</del>
   - <del>enable/disable on show message</del>
-- Show gravatar in address book
+- <del>Show gravatar in address book</del>
 - Caching maybe
 
