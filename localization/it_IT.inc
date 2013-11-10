@@ -9,7 +9,7 @@
 | Licensed under the GNU GPL                                            |
 |                                                                       |
 +-----------------------------------------------------------------------+
-| Author: Ondra 'Kepi' Kudlik <kepi@igloonet.cz>                        |
+| Author: Lorenzo Salvadorini aka LoreLLo <lorello@openweb.it>          |
 +-----------------------------------------------------------------------+
 
 */
