@@ -60,7 +60,7 @@ class show_gravatar extends rcube_plugin
                 $this->rcmail->action == 'show')
         ) {
             // in addressbook, there is larger format then in message
-            $this->size = $this->rcmail->action == 'show' ? 112 : 32;
+            $this->size = $this->rcmail->task == 'addresbook' ? 112 : 48;
 
             // load default rating from settings
             $this->rating = $this->rcmail->config->get(
