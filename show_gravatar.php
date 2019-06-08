@@ -23,7 +23,7 @@
  *
  * Enable the plugin in config/main.inc.php
  *
- * @version 0.2
+ * @version 0.3
  * @author Ondra Kudlík (Kepi)
  * @website https://kepi.cz/
  */
@@ -160,7 +160,7 @@ class show_gravatar extends rcube_plugin
         ));
 
         $options[$option] = array(
-            'title' => html::label($option, Q($this->gettext($option))),
+            'title' => html::label($option, rcube::Q($this->gettext($option))),
             'content' => $checkbox->show($value ? 1 : 0)
         );
     }
@@ -198,7 +198,7 @@ class show_gravatar extends rcube_plugin
         }
 
         $options[$option] = array(
-            'title' => html::label($option, Q($this->gettext($option))),
+            'title' => html::label($option, rcube::Q($this->gettext($option))),
             'content' => $select->show($value)
         );
     }
@@ -221,10 +221,10 @@ class show_gravatar extends rcube_plugin
         $this->select(
             'gravatar_rating',
             array(
-                'g' => Q($this->gettext('gravatar_G')),
-                'pg' => Q($this->gettext('gravatar_PG')),
-                'r' => Q($this->gettext('gravatar_R')),
-                'x' => Q($this->gettext('gravatar_X'))
+                'g' => rcube::Q($this->gettext('gravatar_G')),
+                'pg' => rcube::Q($this->gettext('gravatar_PG')),
+                'r' => rcube::Q($this->gettext('gravatar_R')),
+                'x' => rcube::Q($this->gettext('gravatar_X'))
             ),
             $this->default_rating,
             $options
@@ -239,7 +239,7 @@ class show_gravatar extends rcube_plugin
                     'monsterid' => 'Monsterid',
                     'wavatar' => 'Wavatar',
                     'mm' => 'Mistery-man',
-                    '404' => Q($this->gettext('gravatar_none'))
+                    '404' => rcube::Q($this->gettext('gravatar_none'))
                 ),
                 $this->default_default,
                 $options
@@ -250,7 +250,7 @@ class show_gravatar extends rcube_plugin
 
         if ($args['section'] == 'mailview') {
             $args['blocks']['gravatar'] = array(
-                'name' => Q($this->gettext('gravatars')),
+                'name' => rcube::Q($this->gettext('gravatars')),
                 'options' => $options
             );
         }
