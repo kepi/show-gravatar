@@ -42,21 +42,13 @@ class show_gravatar extends rcube_plugin
     private $default_size = 48;
     private $default_rating = 'g';
     private $default_default = 'identicon';
-    private $gravatar_port = 80;
-    private $gravatar_hostname = 'www.gravatar.com';
-    private $gravatar_url = 'http://www.gravatar.com/';
+    private $gravatar_url = 'https://secure.gravatar.com/';
 
     function init()
     {
         $this->add_texts('localization/', false);
 
         $this->rcmail = rcmail::get_instance();
-
-        if ($this->is_https()) {
-            $this->gravatar_port = 443;
-            $this->gravatar_hostname = 'secure.gravatar.com';
-            $this->gravatar_url = 'https://secure.gravatar.com/';
-        }
 
         // use native support for contact photos
         if (
@@ -89,16 +81,6 @@ class show_gravatar extends rcube_plugin
                 $this->add_hook('preferences_save', array($this, 'save_prefs'));
             }
         }
-    }
-
-    // returns true if rc is running on https protocol
-    function is_https()
-    {
-        return $_SERVER["HTTPS"] == 'on' ||
-            $_SERVER["HTTP_FRONT_END_HTTPS"] == 'on' ||
-            preg_match("/^https:/", $_SERVER['SCRIPT_URI'])
-            ? true
-            : false;
     }
 
     function enabled($option)
