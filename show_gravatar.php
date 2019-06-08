@@ -53,6 +53,10 @@ class show_gravatar extends rcube_plugin
 
         $this->rcmail = rcmail::get_instance();
 
+        // remove default background in styles so robohash and other transparent
+        // types works
+        $this->include_stylesheet("skins/default/show_gravatar.css");
+
         // display photo in message preview or addressbook
         if (
             $this->rcmail->task == 'addressbook' &&
