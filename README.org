@@ -1,0 +1,37 @@
+#+TITLE: Show Gravatar
+
+*Show Gravatar* is [[https://roundcube.net/][Roundcube webmail client]] plugin which displays e-mail
+sender's [[https://gravatar.com/][Gravatar]] in every message.
+
+* Instalation
+
+From your RoundCube plugins directory type
+
+#+begin_src sh
+git clone git://github.com/kepi/show-gravatar.git show_gravatar
+#+end_src
+
+* Roadmap
+
+- Test gravatar display in more browsers (help welcomed)
+- Add setting page
+  - <del>enable/disable per user basis</del>
+  - <del>different gravatar sizes</del>
+  - <del>support for gravatar ratings</del>
+  - <del>enable/disable on preview pane</del>
+  - <del>enable/disable on show message</del>
+- <del>Show gravatar in address book</del>
+- Caching maybe
+
+* License
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a [[./LICENSE.org][copy of the GNU General Public License]] along with
+this program. If not, see <https://www.gnu.org/licenses/>.

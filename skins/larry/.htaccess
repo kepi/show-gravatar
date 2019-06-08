@@ -1,4 +1,0 @@
-<Location create_styles.sh>
-	Order allow,deny
-	Deny from all
-</Location>

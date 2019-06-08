@@ -1,275 +1,275 @@
 <?php
-
 /**
  * Show gravatar for sender
  *
- * This plugin will show gravatar picture for message sender.
+ * This plugin will show Gravatar for e-mail senders and contacts without
+ * picture.
+ *
+ * Copyright (C) 2009 Ondřej Kudlík https://kepi.cz
+ *
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  *
  * Enable the plugin in config/main.inc.php
  *
- * @version 0.2
- * @author Ondra 'Kepi' Kudlik
- * @website http://kepi.cz/
+ * @version 0.3
+ * @author Ondra Kudlík (Kepi)
+ * @website https://kepi.cz/
  */
 
 class show_gravatar extends rcube_plugin
 {
-  public $task = 'mail|settings|addressbook';
+    public $task = 'mail|settings|addressbook';
 
-  private $gravatar_id;
-  private $sender;
-  private $rcmail;
-  private $size;
-  private $rating;
-  private $default;
-  private $border;
-  private $default_size = 48;
-  private $default_rating = 'g';
-  private $default_default = 'identicon';
-  private $gravatar_port = 80;
-  private $gravatar_hostname = 'www.gravatar.com';
-  private $gravatar_url = 'http://www.gravatar.com/';
-  private $nativepics = false;
+    private $gravatar_id;
+    private $sender;
+    private $rcmail;
+    private $size;
+    private $rating;
+    private $default;
+    private $border;
+    private $default_rating = 'g';
+    private $default_default = 'mp';
+    private $gravatar_base_url = 'https://secure.gravatar.com/';
 
-  function init()
-  {
-    $this->add_texts('localization/', false);
+    /**
+     * Plugin initialization
+     */
+    function init()
+    {
+        $this->add_texts('localization/', false);
 
-    $this->rcmail = rcmail::get_instance();
-    $this->nativepics = !version_compare(RCMAIL_VERSION, '0.9-x', '<');  // Roundcube >= 0.9 has native support for contact pics in mail view
+        $this->rcmail = rcmail::get_instance();
 
-    if ( $this->is_https() ) {
-      $this->gravatar_port = 443;
-      $this->gravatar_hostname = 'secure.gravatar.com';
-      $this->gravatar_url = 'https://secure.gravatar.com/';
-    }
-    
-    // render gravatar picture directly into email preview in pre-0.9 versions
-    if ($this->rcmail->task == 'mail'
-          && !$this->nativepics
-          && ( ($this->enabled('gravatar_enable_message') && $this->rcmail->action == 'show')
-            || ($this->enabled('gravatar_enable_preview') && $this->rcmail->action == 'preview'))) {
+        // remove default background in styles so robohash and other transparent
+        // types works
+        $this->include_stylesheet("skins/default/show_gravatar.css");
 
-      $this->add_hook('render_page', array($this, 'render_page'));
-      $this->add_hook('message_load', array($this, 'message_load'));
-      $this->add_hook('template_object_messageheaders', array($this, 'html_output'));
+        // display photo in message preview or addressbook
+        if (
+            $this->rcmail->task == 'addressbook' &&
+            ($this->rcmail->action == 'photo' ||
+                $this->rcmail->action == 'show')
+        ) {
+            // in addressbook, there is larger format then in message
+            $this->size = $this->rcmail->task == 'addresbook' ? 112 : 48;
 
-      $this->size = $this->rcmail->config->get('gravatar_size', $this->default_size);
-      $this->rating = $this->rcmail->config->get('gravatar_rating', $this->default_rating);
-      $this->default = $this->rcmail->config->get('gravatar_default', $this->default_default);
+            // load default rating from settings
+            $this->rating = $this->rcmail->config->get(
+                'gravatar_rating',
+                $this->default_rating
+            );
 
-      $this->border = $this->enabled('gravatar_border');
+            // get default gravatar type from settings
+            $this->default = $this->rcmail->config->get(
+                'gravatar_default',
+                $this->default_default
+            );
 
-      $skin = $this->rcmail->config->get('skin');
-      if (!file_exists($this->home."/skins/$skin/show_gravatar.css"))
-        $skin = 'default';
-
-      // add style for placing gravatar icon
-      $this->include_stylesheet("skins/$skin/show_gravatar_".$this->size.".css");
-    }
-    // use native support for contact photos
-    else if ($this->rcmail->task == 'addressbook' && ($this->rcmail->action == 'show' || $this->rcmail->action == 'photo')) {
-      $this->size = $this->rcmail->config->get('gravatar_size', $this->default_size);
-      $this->rating = $this->rcmail->config->get('gravatar_rating', $this->default_rating);
-      $this->default = '404';
-
-      // use dedicated hook to show contact photos
-      $this->add_hook('contact_photo', array($this, 'contact_photo'));
-    }
-
-    else if ($this->rcmail->task == 'settings') {
-      $dont_override = $this->rcmail->config->get('dont_override', array());
-      if (!in_array('show_gravatar', $dont_override)) {
-        $this->add_hook('preferences_list', array($this, 'prefs_table'));
-        $this->add_hook('preferences_save', array($this, 'save_prefs'));
-      }
+            // use dedicated hook to show contact photos
+            $this->add_hook('contact_photo', array($this, 'contact_photo'));
+        }
+        // settings page
+        elseif ($this->rcmail->task == 'settings') {
+            $dont_override = $this->rcmail->config->get(
+                'dont_override',
+                array()
+            );
+            if (!in_array('show_gravatar', $dont_override)) {
+                $this->add_hook('preferences_list', array(
+                    $this,
+                    'prefs_table'
+                ));
+                $this->add_hook('preferences_save', array($this, 'save_prefs'));
+            }
+        }
     }
 
-  }
+    /**
+     * Check if Array is associative or normal.
+     *
+     * @param array $array Array to test
+     *
+     * @return bool True if array is associative
+     */
+    function is_assoc($array)
+    {
+        return is_array($array) &&
+            (0 !==
+                count(array_diff_key($array, array_keys(array_keys($array)))) ||
+                count($array) == 0);
+    }
 
-  // returns true if rc is running on https protocol
-  function is_https()
-  {
-    return ( $_SERVER["HTTPS"] == 'on' || $_SERVER["HTTP_FRONT_END_HTTPS"] == 'on' 
-              || preg_match("/^https:/", $_SERVER['SCRIPT_URI']) ) ? true : false;
-  }
+    /**
+     * Helper to build selects for preferences page.
+     *
+     * @param string $option Name of option.
+     * @param array $possible_options Array or associative array with possible options.
+     * @param string|int $default Default value in case none is loaded.
+     * @param array $options Passed options array.
+     *
+     * @return void
+     */
 
-  function enabled($option)
-  {
-    return $this->rcmail->config->get($option) ? true : false;
-  }
+    // helper for select
+    function select($option, $possible_options, $default, &$options)
+    {
+        $value = $this->rcmail->config->get($option, $default);
+        $select = new html_select(array('name' => '_' . $option));
 
-  // helper for checkbox
-  function checkbox($option, &$options)
-  {
-      $value = $this->rcmail->config->get($option);
-      $checkbox = new html_checkbox(array('name' => '_'.$option, 'id' => $option, 'value' => 1));
+        // if associative, build needed arrays
+        if ($this->is_assoc($possible_options)) {
+            $opt_labels = array();
+            $opt_attrs = array();
 
-      $options[$option] = array(
-        'title' => html::label($option, Q($this->gettext($option))),
-        'content' => $checkbox->show($value?1:0)
-      );
-  }
+            foreach ($possible_options as $attr => $label) {
+                $opt_labels[] = $label;
+                $opt_attrs[] = (string) $attr;
+            }
 
-  // check if array is associative
-  function is_assoc($array) {
-        return (is_array($array) && (0 !== count(array_diff_key($array, array_keys(array_keys($array)))) || count($array)==0));
-  }
+            $select->add($opt_labels, $opt_attrs);
 
-  // helper for select
-  function select($option, $possible_options, $default, &$options)
-  {
-      $value = $this->rcmail->config->get($option, $default);
-      $select = new html_select(array('name' => '_'.$option));
-
-      // if associative, build needed arrays
-      if ( $this->is_assoc($possible_options) ) {
-
-        $opt_labels = array();
-        $opt_attrs = array();
-
-        foreach($possible_options as $attr => $label) {
-          $opt_labels[] = $label;
-          $opt_attrs[] = (string)$attr;
+            // else options and attrs are same
+        } else {
+            $select->add($possible_options, $possible_options);
         }
 
-        $select->add($opt_labels, $opt_attrs);
-
-      // else options and attrs are same
-      } else {
-        $select->add($possible_options, $possible_options);
-      }
-
-
-      $options[$option] = array(
-        'title' => html::label($option, Q($this->gettext($option))),
-        'content' => $select->show($value)
-      );
-  }
-
-  function prefs_table($args)
-  {
-    $options = array();
-
-    if (!$this->nativepics) {
-      $this->checkbox('gravatar_enable_preview', $options);
-      $this->checkbox('gravatar_enable_message', $options);
+        $options[$option] = array(
+            'title' => html::label($option, rcube::Q($this->gettext($option))),
+            'content' => $select->show($value)
+        );
     }
 
-    $this->select('gravatar_size', array('16','24','32','48','64','128'), "{$this->default_size}", $options);
-    $this->select('gravatar_rating',
-                    array('g' => Q($this->gettext('gravatar_G')),
-                          'pg' => Q($this->gettext('gravatar_PG')),
-                          'r' => Q($this->gettext('gravatar_R')),
-                          'x' => Q($this->gettext('gravatar_X'))
-                      ), $this->default_rating, $options);
+    /**
+     * Handler for preferences_list which add options for setting gravatar plugin.
+     *
+     * @param array $p Original parameters.
+     *
+     * @return array $p Modified parameters.
+     */
+    function prefs_table($p)
+    {
+        $options = array();
 
-    if (!$this->nativepics) {
-      $this->select('gravatar_default', 
-                    array('' => 'Blue G',
-                          'identicon' => 'Identicon',
-                          'monsterid' => 'Monsterid',
-                          'wavatar' => 'Wavatar',
-                          'mm' => 'Mistery-man',
-                          '404' => Q($this->gettext('gravatar_none'))
-                      ), $this->default_default, $options);
+        $this->select(
+            'gravatar_default',
+            array(
+                'mp' => 'Mystery person',
+                'identicon' => 'Identicon',
+                'monsterid' => 'Monsterid',
+                'wavatar' => 'Wavatar',
+                'retro' => 'Retro',
+                'robohash' => 'Robohash'
+            ),
+            $this->default_default,
+            $options
+        );
+        $this->select(
+            'gravatar_rating',
+            array(
+                'g' => rcube::Q($this->gettext('gravatar_G')),
+                'pg' => rcube::Q($this->gettext('gravatar_PG')),
+                'r' => rcube::Q($this->gettext('gravatar_R')),
+                'x' => rcube::Q($this->gettext('gravatar_X'))
+            ),
+            $this->default_rating,
+            $options
+        );
 
-      $this->checkbox('gravatar_border', $options);
+        if ($p['section'] == 'mailview') {
+            $p['blocks']['gravatar'] = array(
+                'name' => rcube::Q($this->gettext('gravatars')),
+                'options' => $options
+            );
+        }
+
+        return $p;
     }
 
-    if ($args['section'] == 'mailview') {
-
-      $args['blocks']['gravatar'] = array(
-        'name' => Q($this->gettext('gravatars')),
-        'options' => $options
-      );
+    /**
+     * Handler for preferences_save hook.
+     * Executed on MailView settings form submit.
+     *
+     * @param array $p Original parameters.
+     *
+     * @return array $p Modified parameters.
+     */
+    function save_prefs($p)
+    {
+        if ($p['section'] == 'mailview') {
+            $p['prefs'] = array(
+                'gravatar_default' => rcube_utils::get_input_value(
+                    '_gravatar_default',
+                    rcube_utils::INPUT_POST
+                ),
+                'gravatar_rating' => rcube_utils::get_input_value(
+                    '_gravatar_rating',
+                    rcube_utils::INPUT_POST
+                )
+            );
+        }
+        return $p;
     }
 
-    return $args;
-  }
+    /**
+     * Handler for contact_photo hook which sets gravatar url for passed
+     * contact.
+     *
+     * FIXME if record['photo'] is present, we should not replace it with
+     * gravatar.
+     *
+     * @param array $p Original parameters.
+     *
+     * @return array $p Modified parameters.
+     */
+    function contact_photo($p)
+    {
+        if (!$p['data']) {
+            $emails = rcube_addressbook::get_col_values(
+                'email',
+                $p['record'],
+                true
+            );
+            $email = $p['email'] ? $p['email'] : $emails[0];
 
-  function save_prefs($args)
-  {
-    if ($args['section'] == 'mailview') {
-      if (!$this->nativepics) {
-        $args['prefs']['gravatar_enable_preview'] = get_input_value('_gravatar_enable_preview', RCUBE_INPUT_POST);
-        $args['prefs']['gravatar_enable_message'] = get_input_value('_gravatar_enable_message', RCUBE_INPUT_POST);
-      }
-
-      $args['prefs']['gravatar_size'] = get_input_value('_gravatar_size', RCUBE_INPUT_POST);
-      $args['prefs']['gravatar_rating'] = get_input_value('_gravatar_rating', RCUBE_INPUT_POST);
-
-      if (!$this->nativepics) {
-        $args['prefs']['gravatar_default'] = get_input_value('_gravatar_default', RCUBE_INPUT_POST);
-        $args['prefs']['gravatar_border'] = get_input_value('_gravatar_border', RCUBE_INPUT_POST);
-      }
-      return $args;
-    }
-  }
-
-  function contact_photo($p)
-  {
-    // if no contact photo was found
-    if (!$p['data']) {
-      // TODO: try for every email address of contact record?
-      $emails = rcube_addressbook::get_col_values('email', $p['record'], true);
-      $email = $p['email'] ? $p['email'] : $emails[0];
-
-      if ($email) {
-        $this->gravatar_id = md5(strtolower($email));
-        $url = $this->gravatar_url();
-
-        $headers = get_headers($url);
-        if (is_array($headers) && preg_match("/200 OK/", $headers[0]))
-          $p['url'] = $url;
-      }
+            if ($email) {
+                $p['url'] = $this->gravatar_url($email);
+            }
+        }
+        return $p;
     }
 
-    return $p;
-  }
+    /**
+     * Return gravatar URL
+     *
+     * @param string $email E-mail address for which we want Gravatar.
+     *
+     * @return string URL with Gravatar image.
+     */
+    function gravatar_url($email)
+    {
+        $gravatar_id = md5(strtolower(trim($email)));
 
-  function message_load($p)
-  {
-    $this->sender = (array)$p['object']->sender;
-    $this->gravatar_id = md5(strtolower($this->sender['mailto']));
-  }
-
-  function gravatar()
-  {
-    $url = $this->gravatar_url();
-
-    // check if remote image doesn't return 404 if we use
-    // 404 for default gravatar
-    if ( $this->default == '404' ) {
-       $headers = get_headers($url);
-
-       if ( !is_array($headers) || preg_match("/404 Not Found/", $headers[0]) ) 
-          return;
+        return $this->gravatar_base_url .
+            "avatar/" .
+            $gravatar_id .
+            "?s=" .
+            $this->size .
+            "&r=" .
+            $this->rating .
+            "&d=" .
+            $this->default;
     }
-
-    return html::div(array('class' => 'gravatar'.($this->border?' gravatarBorder':'') ),
-      html::img(array('src' => $url, 'title' => 'Gravatar')));
-  }
-
-  function gravatar_url()
-  {
-    return $this->gravatar_url . "avatar/" . $this->gravatar_id
-      . "?s=" . $this->size
-      . "&r=" . $this->rating
-      . "&d=" . $this->default;
-  }
-
-  function html_output($p)
-  {
-    $p['content'] = $this->gravatar().$p['content'];
-
-    return $p;
-  } 
-
-  function render_page($p)
-  {
-    $this->rcmail->output->add_header(
-      html::tag('link', array('rel' => 'dns-prefetch',
-                'href' => $this->gravatar_url)));
-  }
 }

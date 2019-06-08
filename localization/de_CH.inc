@@ -14,12 +14,10 @@
 */
 
 $labels = array();
-$labels['gravatars']  = 'Gravatare';
-$labels['gravatar_enable_message'] = 'In der Nachricht anzeigen'; 
-$labels['gravatar_enable_preview'] = 'In der Vorschau anzeigen';
-$labels['gravatar_size'] = 'Avatar Grösse';
+$labels['gravatars'] = 'Gravatare';
 $labels['gravatar_rating'] = 'Avatar Bewertung';
 $labels['gravatar_default'] = 'Standard Avatar wenn kein Bild gefunden';
-$labels['gravatar_border'] = 'Rahmen um Avatar';
-
-?>
+$labels['gravatar_G'] = 'G';
+$labels['gravatar_PG'] = 'PG';
+$labels['gravatar_R'] = 'R';
+$labels['gravatar_X'] = 'X';
