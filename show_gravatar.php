@@ -42,7 +42,7 @@ class show_gravatar extends rcube_plugin
     private $border;
     private $default_rating = 'g';
     private $default_default = 'mp';
-    private $gravatar_url = 'https://secure.gravatar.com/';
+    private $gravatar_base_url = 'https://secure.gravatar.com/';
 
     /**
      * Plugin initialization
@@ -61,6 +61,18 @@ class show_gravatar extends rcube_plugin
         ) {
             // in addressbook, there is larger format then in message
             $this->size = $this->rcmail->action == 'show' ? 112 : 32;
+
+            // load default rating from settings
+            $this->rating = $this->rcmail->config->get(
+                'gravatar_rating',
+                $this->default_rating
+            );
+
+            // get default gravatar type from settings
+            $this->default = $this->rcmail->config->get(
+                'gravatar_default',
+                $this->default_default
+            );
 
             // use dedicated hook to show contact photos
             $this->add_hook('contact_photo', array($this, 'contact_photo'));
@@ -221,7 +233,6 @@ class show_gravatar extends rcube_plugin
     function contact_photo($p)
     {
         if (!$p['data']) {
-            // TODO: try for every email address of contact record?
             $emails = rcube_addressbook::get_col_values(
                 'email',
                 $p['record'],
@@ -230,8 +241,7 @@ class show_gravatar extends rcube_plugin
             $email = $p['email'] ? $p['email'] : $emails[0];
 
             if ($email) {
-                $this->gravatar_id = md5(strtolower(trim($email)));
-                $p['url'] = $this->gravatar_url();
+                $p['url'] = $this->gravatar_url($email);
             }
         }
         return $p;
@@ -240,28 +250,22 @@ class show_gravatar extends rcube_plugin
     /**
      * Return gravatar URL
      *
+     * @param string $email E-mail address for which we want Gravatar.
+     *
      * @return string URL with Gravatar image.
      */
-    function gravatar_url()
+    function gravatar_url($email)
     {
-        $rating = $this->rcmail->config->get(
-            'gravatar_rating',
-            $this->default_rating
-        );
+        $gravatar_id = md5(strtolower(trim($email)));
 
-        $default = $this->rcmail->config->get(
-            'gravatar_default',
-            $this->default_default
-        );
-
-        return $this->gravatar_url .
+        return $this->gravatar_base_url .
             "avatar/" .
-            $this->gravatar_id .
+            $gravatar_id .
             "?s=" .
             $this->size .
             "&r=" .
-            $rating .
+            $this->rating .
             "&d=" .
-            $default;
+            $this->default;
     }
 }
