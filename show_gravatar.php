@@ -166,12 +166,12 @@ class show_gravatar extends rcube_plugin
         $this->select(
             'gravatar_default',
             array(
-                'mp' => rcube::Q($this->gettext('mp')),
-                'identicon' => rcube::Q($this->gettext('identicon')),
-                'monsterid' => rcube::Q($this->gettext('monsterid')),
-                'wavatar' => rcube::Q($this->gettext('wavatar')),
-                'retro' => rcube::Q($this->gettext('retro')),
-                'robohash' => rcube::Q($this->gettext('robohash'))
+                'mp' => 'Mystery person',
+                'identicon' => 'Identicon',
+                'monsterid' => 'Monsterid',
+                'wavatar' => 'Wavatar',
+                'retro' => 'Retro',
+                'robohash' => 'Robohash'
             ),
             $this->default_default,
             $options

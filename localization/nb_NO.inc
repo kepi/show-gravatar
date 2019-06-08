@@ -16,7 +16,7 @@
 
 $labels = array();
 $labels['gravatars'] = 'Gravatar';
-$labels['gravatar_enable_message'] = 'Vis Gravatar ved visning av melding';
-$labels['gravatar_enable_preview'] = 'Vis Gravatar ved forhåndsvisning av melding';
-
-?>
+$labels['gravatar_G'] = 'G';
+$labels['gravatar_PG'] = 'PG';
+$labels['gravatar_R'] = 'R';
+$labels['gravatar_X'] = 'X';

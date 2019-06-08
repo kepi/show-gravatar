@@ -15,12 +15,14 @@
 */
 
 $labels = array();
-$labels['gravatars']  = 'Gravatary';
-$labels['gravatar_enable_message']  = 'Povolit v detailu zprávy';
-$labels['gravatar_enable_preview']  = 'Povolit v náhledu zprávy';
+$labels['gravatars'] = 'Gravatary';
+$labels['gravatar_enable_message'] = 'Povolit v detailu zprávy';
+$labels['gravatar_enable_preview'] = 'Povolit v náhledu zprávy';
 $labels['gravatar_size'] = 'Velikost avataru';
 $labels['gravatar_rating'] = 'Hodnocení avataru';
 $labels['gravatar_default'] = 'Výchozí avatar, pokud uživatel nemá';
 $labels['gravatar_border'] = 'Rámeček kolem avataru';
-
-?>
+$labels['gravatar_G'] = 'G';
+$labels['gravatar_PG'] = 'PG';
+$labels['gravatar_R'] = 'R';
+$labels['gravatar_X'] = 'X';
