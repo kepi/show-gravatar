@@ -2,7 +2,8 @@
 /**
  * Show gravatar for sender
  *
- * This plugin will show gravatar picture for message sender.
+ * This plugin will show Gravatar for e-mail senders and contacts without
+ * picture.
  *
  * Copyright (C) 2009 Ondřej Kudlík https://kepi.cz
  *
@@ -43,6 +44,9 @@ class show_gravatar extends rcube_plugin
     private $default_default = 'mp';
     private $gravatar_url = 'https://secure.gravatar.com/';
 
+    /**
+     * Plugin initialization
+     */
     function init()
     {
         $this->add_texts('localization/', false);
@@ -77,12 +81,13 @@ class show_gravatar extends rcube_plugin
         }
     }
 
-    function enabled($option)
-    {
-        return $this->rcmail->config->get($option) ? true : false;
-    }
-
-    // check if array is associative
+    /**
+     * Check if Array is associative or normal.
+     *
+     * @param array $array Array to test
+     *
+     * @return bool True if array is associative
+     */
     function is_assoc($array)
     {
         return is_array($array) &&
@@ -90,6 +95,17 @@ class show_gravatar extends rcube_plugin
                 count(array_diff_key($array, array_keys(array_keys($array)))) ||
                 count($array) == 0);
     }
+
+    /**
+     * Helper to build selects for preferences page.
+     *
+     * @param string $option Name of option.
+     * @param array $possible_options Array or associative array with possible options.
+     * @param string|int $default Default value in case none is loaded.
+     * @param array $options Passed options array.
+     *
+     * @return void
+     */
 
     // helper for select
     function select($option, $possible_options, $default, &$options)
@@ -120,7 +136,14 @@ class show_gravatar extends rcube_plugin
         );
     }
 
-    function prefs_table($args)
+    /**
+     * Handler for preferences_list which add options for setting gravatar plugin.
+     *
+     * @param array $p Original parameters.
+     *
+     * @return array $p Modified parameters.
+     */
+    function prefs_table($p)
     {
         $options = array();
 
@@ -149,23 +172,23 @@ class show_gravatar extends rcube_plugin
             $options
         );
 
-        if ($args['section'] == 'mailview') {
-            $args['blocks']['gravatar'] = array(
+        if ($p['section'] == 'mailview') {
+            $p['blocks']['gravatar'] = array(
                 'name' => rcube::Q($this->gettext('gravatars')),
                 'options' => $options
             );
         }
 
-        return $args;
+        return $p;
     }
 
     /**
      * Handler for preferences_save hook.
      * Executed on MailView settings form submit.
      *
-     * @param array Original parameters
+     * @param array $p Original parameters.
      *
-     * @return array Modified parameters
+     * @return array $p Modified parameters.
      */
     function save_prefs($p)
     {
@@ -184,7 +207,17 @@ class show_gravatar extends rcube_plugin
         return $p;
     }
 
-    // FIXME pokud je record['photo'] tak chceme asi radsi to
+    /**
+     * Handler for contact_photo hook which sets gravatar url for passed
+     * contact.
+     *
+     * FIXME if record['photo'] is present, we should not replace it with
+     * gravatar.
+     *
+     * @param array $p Original parameters.
+     *
+     * @return array $p Modified parameters.
+     */
     function contact_photo($p)
     {
         if (!$p['data']) {
@@ -204,6 +237,11 @@ class show_gravatar extends rcube_plugin
         return $p;
     }
 
+    /**
+     * Return gravatar URL
+     *
+     * @return string URL with Gravatar image.
+     */
     function gravatar_url()
     {
         $rating = $this->rcmail->config->get(
