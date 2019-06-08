@@ -262,31 +262,39 @@ class show_gravatar extends rcube_plugin
     {
         if ($args['section'] == 'mailview') {
             if (!$this->nativepics) {
-                $args['prefs']['gravatar_enable_preview'] = get_input_value(
+                $args['prefs'][
+                    'gravatar_enable_preview'
+                ] = rcube_utils::get_input_value(
                     '_gravatar_enable_preview',
                     RCUBE_INPUT_POST
                 );
-                $args['prefs']['gravatar_enable_message'] = get_input_value(
+                $args['prefs'][
+                    'gravatar_enable_message'
+                ] = rcube_utils::get_input_value(
                     '_gravatar_enable_message',
                     RCUBE_INPUT_POST
                 );
             }
 
-            $args['prefs']['gravatar_size'] = get_input_value(
+            $args['prefs']['gravatar_size'] = rcube_utils::get_input_value(
                 '_gravatar_size',
                 RCUBE_INPUT_POST
             );
-            $args['prefs']['gravatar_rating'] = get_input_value(
+            $args['prefs']['gravatar_rating'] = rcube_utils::get_input_value(
                 '_gravatar_rating',
                 RCUBE_INPUT_POST
             );
 
             if (!$this->nativepics) {
-                $args['prefs']['gravatar_default'] = get_input_value(
+                $args['prefs'][
+                    'gravatar_default'
+                ] = rcube_utils::get_input_value(
                     '_gravatar_default',
                     RCUBE_INPUT_POST
                 );
-                $args['prefs']['gravatar_border'] = get_input_value(
+                $args['prefs'][
+                    'gravatar_border'
+                ] = rcube_utils::get_input_value(
                     '_gravatar_border',
                     RCUBE_INPUT_POST
                 );
