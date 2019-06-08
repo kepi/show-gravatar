@@ -39,9 +39,8 @@ class show_gravatar extends rcube_plugin
     private $rating;
     private $default;
     private $border;
-    private $default_size = 48;
     private $default_rating = 'g';
-    private $default_default = 'identicon';
+    private $default_default = 'mp';
     private $gravatar_url = 'https://secure.gravatar.com/';
 
     function init()
@@ -50,25 +49,20 @@ class show_gravatar extends rcube_plugin
 
         $this->rcmail = rcmail::get_instance();
 
-        // use native support for contact photos
+        // display photo in message preview or addressbook
         if (
             $this->rcmail->task == 'addressbook' &&
             ($this->rcmail->action == 'photo' ||
                 $this->rcmail->action == 'show')
         ) {
-            $this->size = $this->rcmail->config->get(
-                'gravatar_size',
-                $this->default_size
-            );
-            $this->rating = $this->rcmail->config->get(
-                'gravatar_rating',
-                $this->default_rating
-            );
-            $this->default = '404';
+            // in addressbook, there is larger format then in message
+            $this->size = $this->rcmail->action == 'show' ? 112 : 32;
 
             // use dedicated hook to show contact photos
             $this->add_hook('contact_photo', array($this, 'contact_photo'));
-        } elseif ($this->rcmail->task == 'settings') {
+        }
+        // settings page
+        elseif ($this->rcmail->task == 'settings') {
             $dont_override = $this->rcmail->config->get(
                 'dont_override',
                 array()
@@ -131,9 +125,16 @@ class show_gravatar extends rcube_plugin
         $options = array();
 
         $this->select(
-            'gravatar_size',
-            array('16', '24', '32', '48', '64', '128'),
-            "{$this->default_size}",
+            'gravatar_default',
+            array(
+                'mp' => rcube::Q($this->gettext('mp')),
+                'identicon' => rcube::Q($this->gettext('identicon')),
+                'monsterid' => rcube::Q($this->gettext('monsterid')),
+                'wavatar' => rcube::Q($this->gettext('wavatar')),
+                'retro' => rcube::Q($this->gettext('retro')),
+                'robohash' => rcube::Q($this->gettext('robohash'))
+            ),
+            $this->default_default,
             $options
         );
         $this->select(
@@ -161,8 +162,8 @@ class show_gravatar extends rcube_plugin
     function save_prefs($args)
     {
         if ($args['section'] == 'mailview') {
-            $args['prefs']['gravatar_size'] = rcube_utils::get_input_value(
-                '_gravatar_size',
+            $args['prefs']['gravatar_default'] = rcube_utils::get_input_value(
+                '_gravatar_default',
                 RCUBE_INPUT_POST
             );
             $args['prefs']['gravatar_rating'] = rcube_utils::get_input_value(
@@ -174,9 +175,9 @@ class show_gravatar extends rcube_plugin
         }
     }
 
+    // FIXME pokud je record['photo'] tak chceme asi radsi to
     function contact_photo($p)
     {
-        // if no contact photo was found
         if (!$p['data']) {
             // TODO: try for every email address of contact record?
             $emails = rcube_addressbook::get_col_values(
@@ -187,55 +188,33 @@ class show_gravatar extends rcube_plugin
             $email = $p['email'] ? $p['email'] : $emails[0];
 
             if ($email) {
-                $this->gravatar_id = md5(strtolower($email));
-                $url = $this->gravatar_url();
-
-                $headers = get_headers($url);
-                if (is_array($headers) && preg_match("/200 OK/", $headers[0])) {
-                    $p['url'] = $url;
-                }
+                $this->gravatar_id = md5(strtolower(trim($email)));
+                $p['url'] = $this->gravatar_url();
             }
         }
-
         return $p;
-    }
-
-
-    function gravatar()
-    {
-        $url = $this->gravatar_url();
-
-        // check if remote image doesn't return 404 if we use
-        // 404 for default gravatar
-        if ($this->default == '404') {
-            $headers = get_headers($url);
-
-            if (
-                !is_array($headers) ||
-                preg_match("/404 Not Found/", $headers[0])
-            ) {
-                return;
-            }
-        }
-
-        return html::div(
-            array(
-                'class' => 'gravatar' . ($this->border ? ' gravatarBorder' : '')
-            ),
-            html::img(array('src' => $url, 'title' => 'Gravatar'))
-        );
     }
 
     function gravatar_url()
     {
+        $rating = $this->rcmail->config->get(
+            'gravatar_rating',
+            $this->default_rating
+        );
+
+        $default = $this->rcmail->config->get(
+            'gravatar_default',
+            $this->default_default
+        );
+
         return $this->gravatar_url .
             "avatar/" .
             $this->gravatar_id .
             "?s=" .
             $this->size .
             "&r=" .
-            $this->rating .
+            $rating .
             "&d=" .
-            $this->default;
+            $default;
     }
 }
