@@ -1,7 +1,11 @@
 #+TITLE: Show Gravatar
 
 *Show Gravatar* is [[https://roundcube.net/][Roundcube webmail client]] plugin which displays e-mail
-sender's [[https://gravatar.com/][Gravatar]] in every message.
+sender's [[https://gravatar.com/][Gravatar]] in every message and in address book.
+
+Manually assigned photo in address book has higher priority. For contacts where
+no manual photo or Gravatar exists default gravatar type is displayed. You can
+adjust default Gravatar type in settings as well as minimum rating.
 
 * Instalation
 
@@ -10,18 +14,6 @@ From your RoundCube plugins directory type
 #+begin_src sh
 git clone git://github.com/kepi/show-gravatar.git show_gravatar
 #+end_src
-
-* Roadmap
-
-- Test gravatar display in more browsers (help welcomed)
-- Add setting page
-  - <del>enable/disable per user basis</del>
-  - <del>different gravatar sizes</del>
-  - <del>support for gravatar ratings</del>
-  - <del>enable/disable on preview pane</del>
-  - <del>enable/disable on show message</del>
-- <del>Show gravatar in address book</del>
-- Caching maybe
 
 * License
 This program is free software: you can redistribute it and/or modify it under
