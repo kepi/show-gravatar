@@ -159,20 +159,29 @@ class show_gravatar extends rcube_plugin
         return $args;
     }
 
-    function save_prefs($args)
+    /**
+     * Handler for preferences_save hook.
+     * Executed on MailView settings form submit.
+     *
+     * @param array Original parameters
+     *
+     * @return array Modified parameters
+     */
+    function save_prefs($p)
     {
-        if ($args['section'] == 'mailview') {
-            $args['prefs']['gravatar_default'] = rcube_utils::get_input_value(
-                '_gravatar_default',
-                RCUBE_INPUT_POST
+        if ($p['section'] == 'mailview') {
+            $p['prefs'] = array(
+                'gravatar_default' => rcube_utils::get_input_value(
+                    '_gravatar_default',
+                    rcube_utils::INPUT_POST
+                ),
+                'gravatar_rating' => rcube_utils::get_input_value(
+                    '_gravatar_rating',
+                    rcube_utils::INPUT_POST
+                )
             );
-            $args['prefs']['gravatar_rating'] = rcube_utils::get_input_value(
-                '_gravatar_rating',
-                RCUBE_INPUT_POST
-            );
-
-            return $args;
         }
+        return $p;
     }
 
     // FIXME pokud je record['photo'] tak chceme asi radsi to
