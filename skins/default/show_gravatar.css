@@ -1,3 +1,8 @@
 #messageheader #contactphoto {
   background: none !important;
 }
+
+#contactpic {
+  max-height: 112px;
+  background: transparent;
+}
