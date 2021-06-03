@@ -1,15 +1,32 @@
 #+TITLE: Show Gravatar
 
-*Show Gravatar* is [[https://roundcube.net/][Roundcube webmail client]] plugin which displays e-mail
-sender's [[https://gravatar.com/][Gravatar]] in every message and in address book.
+*Show Gravatar* is a plugin for [[https://roundcube.net/][Roundcube webmail]], which displays the e-mail
+sender's [[https://gravatar.com/][Gravatar]] in every message and in the address book.
 
-Manually assigned photo in address book has higher priority. For contacts where
-no manual photo or Gravatar exists default gravatar type is displayed. You can
-adjust default Gravatar type in settings as well as minimum rating.
+Manually assigned photos in the address book have a higher priority. For contacts where
+no manual photo or Gravatar exists, the default Gravatar type is displayed. You can
+select the default Gravatar type in your user settings, as well as the minimum [[https://en.gravatar.com/site/implement/images/#rating][audience rating]].
 
-* Instalation
+*Gravatar types:*
+- *mp:* (Mystery Person) a simple, cartoon-style silhouetted outline of a person
+- *identicon:* a geometric pattern based on an email hash
+- *monsterid:* a generated monster with different colors and faces
+- *wavatar:* generated faces with differing features and backgrounds
+- *retro:* generated, 8-bit arcade-style pixelated faces
+- *robohash:* a generated robot with different colors, faces, etc
 
-From your RoundCube plugins directory type
+In Roundcube's ~config.inc.php~ file, you can replace the plugin's default Gravatar type ('mp') and minimum rating ('g') for anyone
+that hasn't yet selected them in their settings and for new accounts:
+
+#+begin_src php
+// show_gravatar plugin
+$config['gravatar_default'] = 'identicon';
+$config['gravatar_rating'] = 'r';
+#+end_src
+
+* Installation
+
+From the RoundCube ~plugins~ directory, type
 
 #+begin_src sh
 git clone git://github.com/kepi/show-gravatar.git show_gravatar
