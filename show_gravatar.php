@@ -209,7 +209,7 @@ class show_gravatar extends rcube_plugin
     function save_prefs($p)
     {
         if ($p['section'] == 'mailview') {
-            $p['prefs'] = array(
+            $p['prefs'] += array(
                 'gravatar_default' => rcube_utils::get_input_value(
                     '_gravatar_default',
                     rcube_utils::INPUT_POST
